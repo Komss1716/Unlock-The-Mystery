@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Treasure Hunts | Unlock The Mystery</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b0d17;
+            color: white;
+        }
+
+        nav {
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8%;
+            background: #111522;
+            border-bottom: 1px solid #292d42;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+            color: #c084fc;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links a:hover {
+            color: #c084fc;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 70px 20px 40px;
+        }
+
+        .page-header .small-title {
+            color: #c084fc;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .page-header h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            color: #aeb2c3;
+            font-size: 17px;
+        }
+
+        .hunts-container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 20px auto 80px;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .hunt-card {
+            background: #151927;
+            border: 1px solid #292d42;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .hunt-card:hover {
+            transform: translateY(-8px);
+            border-color: #8b5cf6;
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.18);
+        }
+
+        .hunt-image {
+            height: 180px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    rgba(40, 25, 70, 0.75),
+                    rgba(11, 13, 23, 0.9)
+                ),
+                url("https://images.unsplash.com/photo-1518709268805-4e9042af9f23")
+                center/cover;
+        }
+
+        .hunt-image span {
+            font-size: 55px;
+        }
+
+        .hunt-content {
+            padding: 25px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .hunt-content h2 {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .hunt-content p {
+            color: #aeb2c3;
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .hunt-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            color: #d4d6df;
+            font-size: 14px;
+        }
+
+        .start-btn {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+
+            background: #8b5cf6;
+            color: white;
+
+            padding: 13px;
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            transition: 0.3s;
+        }
+
+        .start-btn:hover {
+            background: #7c3aed;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .back-home a {
+            color: #c4b5fd;
+            text-decoration: none;
+        }
+
+        @media (max-width: 950px) {
+
+            .hunts-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            nav {
+                padding: 0 5%;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a {
+                font-size: 13px;
+            }
+
+            .page-header h1 {
+                font-size: 35px;
+            }
+
+            .hunts-container {
+                width: 90%;
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <div class="logo">
+            🔐 UNLOCK THE MYSTERY
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/hunts">Hunts</a>
+            <a href="/login">Login</a>
+        </div>
+
+    </nav>
+
+
+    <section class="page-header">
+
+        <div class="small-title">
+            🗝️ CHOOSE YOUR ADVENTURE
+        </div>
+
+        <h1>Treasure Hunts</h1>
+
+        <p>
+            Choose a mystery, solve the clues and unlock the hidden treasure.
+        </p>
+
+    </section>
+
+
+    <section class="hunts-container">
+
+
+        <!-- Hunt 1 -->
+
+        <div class="hunt-card">
+
+            <div class="hunt-image">
+                <span>🗝️</span>
+            </div>
+
+            <div class="hunt-content">
+
+                <span class="difficulty">
+                    EASY
+                </span>
+
+                <h2>
+                    The Lost Treasure
+                </h2>
+
+                <p>
+                    Begin your journey and discover the first hidden treasure.
+                </p>
+
+                <div class="hunt-info">
+                    <span>🧩 5 Levels</span>
+                    <span>⏱️ 15 min</span>
+                </div>
+
+                <a href="/hunt/1" class="start-btn">
+                    VIEW MYSTERY →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Hunt 2 -->
+
+        <div class="hunt-card">
+
+            <div class="hunt-image">
+                <span>🚪</span>
+            </div>
+
+            <div class="hunt-content">
+
+                <span class="difficulty">
+                    MEDIUM
+                </span>
+
+                <h2>
+                    Mystery of the Hidden Room
+                </h2>
+
+                <p>
+                    A secret room is waiting. Solve every puzzle to unlock it.
+                </p>
+
+                <div class="hunt-info">
+                    <span>🧩 5 Levels</span>
+                    <span>⏱️ 20 min</span>
+                </div>
+
+                <a href="/hunt/2" class="start-btn">
+                    VIEW MYSTERY →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Hunt 3 -->
+
+        <div class="hunt-card">
+
+            <div class="hunt-image">
+                <span>💎</span>
+            </div>
+
+            <div class="hunt-content">
+
+                <span class="difficulty">
+                    MEDIUM
+                </span>
+
+                <h2>
+                    The Missing Diamond
+                </h2>
+
+                <p>
+                    A precious diamond has disappeared. Can you find it?
+                </p>
+
+                <div class="hunt-info">
+                    <span>🧩 5 Levels</span>
+                    <span>⏱️ 20 min</span>
+                </div>
+
+                <a href="/hunt/3" class="start-btn">
+                    VIEW MYSTERY →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Hunt 4 -->
+
+        <div class="hunt-card">
+
+            <div class="hunt-image">
+                <span>📚</span>
+            </div>
+
+            <div class="hunt-content">
+
+                <span class="difficulty">
+                    HARD
+                </span>
+
+                <h2>
+                    Secret of the Ancient Library
+                </h2>
+
+                <p>
+                    An ancient library hides a secret message.
+                </p>
+
+                <div class="hunt-info">
+                    <span>🧩 5 Levels</span>
+                    <span>⏱️ 25 min</span>
+                </div>
+
+                <a href="/hunt/4" class="start-btn">
+                    VIEW MYSTERY →
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Hunt 5 -->
+
+        <div class="hunt-card">
+
+            <div class="hunt-image">
+                <span>🏆</span>
+            </div>
+
+            <div class="hunt-content">
+
+                <span class="difficulty">
+                    HARD
+                </span>
+
+                <h2>
+                    The Final Mystery
+                </h2>
+
+                <p>
+                    The final treasure is near. Solve the hardest mysteries.
+                </p>
+
+                <div class="hunt-info">
+                    <span>🧩 5 Levels</span>
+                    <span>⏱️ 30 min</span>
+                </div>
+
+                <a href="/hunt/5" class="start-btn">
+                    VIEW MYSTERY →
+                </a>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <div class="back-home">
+        <a href="/">
+            ← Back to Home
+        </a>
+    </div>
+
+
+</body>
+
+</html>
