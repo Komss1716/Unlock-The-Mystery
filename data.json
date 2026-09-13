@@ -1,0 +1,256 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Komal Kumari",
+      "username": "komss1716",
+      "email": "admin@example.com",
+      "password": "komss1432",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "name": "komal",
+      "username": "komss",
+      "password": "komss123",
+      "role": "user",
+      "score": 100
+    },
+    {
+      "id": 3,
+      "name": "jigyasha",
+      "username": "jacksii",
+      "password": "jacksii123",
+      "role": "user"
+    }
+  ],
+  "hunts": [
+    {
+      "id": 1,
+      "title": "The Lost Treasure",
+      "description": "Begin ur journey and discover the first hidden treasure",
+      "difficulty": "Easy",
+      "estimatedTime": 15,
+      "totalPoints": 100,
+      "clues": [
+        {
+          "level": 1,
+          "question": "I have hands but cannot clap. What am I?",
+          "answer": "clock",
+          "hint": "You can check the time with me.",
+          "points": 20
+        },
+        {
+          "level": 2,
+          "question": "I have keys but open no locks. I have space but no room. What am I?",
+          "answer": "keyboard",
+          "hint": "You use me to type on a computer.",
+          "points": 20
+        },
+        {
+          "level": 3,
+          "question": "Complete the sequence: 2, 4, 8, 16, ?",
+          "answer": "32",
+          "hint": "Each number is multiplied by 2.",
+          "points": 20
+        },
+        {
+          "level": 4,
+          "question": "I speak without a mouth and hear without ears. I have no body, but I come alive with wind.",
+          "answer": "echo",
+          "hint": "You may hear me after shouting in the mountains.",
+          "points": 20
+        },
+        {
+          "level": 5,
+          "question": "What gets wetter as it dries?",
+          "answer": "towel",
+          "hint": "You use it after taking a bath.",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Mystery of the Hidden Room",
+      "description": "A secret room is waiting. Solve every puzzle to unlock it.",
+      "difficulty": "Medium",
+      "estimatedTime": 20,
+      "totalPoints": 100,
+      "clues": [
+        {
+          "level": 1,
+          "question": "I am tall when I am young and short when I am old. What am I?",
+          "answer": "candle",
+          "hint": "I give light while slowly becoming smaller.",
+          "points": 20
+        },
+        {
+          "level": 2,
+          "question": "What has one eye but cannot see?",
+          "answer": "needle",
+          "hint": "It is used with thread.",
+          "points": 20
+        },
+        {
+          "level": 3,
+          "question": "Unscramble these letters: R E T A W",
+          "answer": "water",
+          "hint": "It is essential for life.",
+          "points": 20
+        },
+        {
+          "level": 4,
+          "question": "A man looks at a portrait and says: Brothers and sisters I have none, but this man's father is my father's son. Who is in the portrait?",
+          "answer": "son",
+          "hint": "The speaker's father's son is the speaker himself.",
+          "points": 20
+        },
+        {
+          "level": 5,
+          "question": "What room has no doors or windows?",
+          "answer": "mushroom",
+          "hint": "Think of a word that contains room.",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Missing Diamond",
+      "description": "A precious diamond has disappeared. Follow the clues and find it.",
+      "difficulty": "Easy",
+      "estimatedTime": 20,
+      "totalPoints": 100,
+      "clues": [
+        {
+          "level": 1,
+          "question": "I have cities but no houses, forests but no trees, and rivers but no water. What am I?",
+          "answer": "map",
+          "hint": "You use me to find places.",
+          "points": 20
+        },
+        {
+          "level": 2,
+          "question": "Complete the sequence: 3, 6, 12, 24, ?",
+          "answer": "48",
+          "hint": "Each number is doubled.",
+          "points": 20
+        },
+        {
+          "level": 3,
+          "question": "What can travel around the world while staying in one corner?",
+          "answer": "stamp",
+          "hint": "You can find me on an envelope.",
+          "points": 20
+        },
+        {
+          "level": 4,
+          "question": "I am full of holes but I can still hold water. What am I?",
+          "answer": "sponge",
+          "hint": "You may use me while cleaning.",
+          "points": 20
+        },
+        {
+          "level": 5,
+          "question": "Which month has 28 days?",
+          "answer": "all months",
+          "hint": "Every month has at least 28 days.",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Secret of the Ancient Library",
+      "description": "An ancient library hides a secret message.",
+      "difficulty": "Hard",
+      "estimatedTime": 25,
+      "totalPoints": 100,
+      "clues": [
+        {
+          "level": 1,
+          "question": "I am taken from a mine and shut inside a wooden case. What am I?",
+          "answer": "graphite",
+          "hint": "You can find me inside a pencil.",
+          "points": 20
+        },
+        {
+          "level": 2,
+          "question": "What has many branches but no fruit, trunk, or leaves?",
+          "answer": "bank",
+          "hint": "People keep money here.",
+          "points": 20
+        },
+        {
+          "level": 3,
+          "question": "A farmer has 17 sheep. All but 9 run away. How many sheep remain?",
+          "answer": "9",
+          "hint": "Read the words 'all but 9' carefully.",
+          "points": 20
+        },
+        {
+          "level": 4,
+          "question": "Take the first letter of each word: Secret Ancient Maps Exist.",
+          "answer": "same",
+          "hint": "Use the first letter of every word.",
+          "points": 20
+        },
+        {
+          "level": 5,
+          "question": "I have a head and a tail but no body. What am I?",
+          "answer": "coin",
+          "hint": "You can find me in your pocket.",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "The Final Mystery",
+      "description": "The final treasure is near. Solve the hardest mysteries.",
+      "difficulty": "Hard",
+      "estimatedTime": 30,
+      "totalPoints": 100,
+      "clues": [
+        {
+          "level": 1,
+          "question": "If two's company and three's a crowd, what are four and five?",
+          "answer": "nine",
+          "hint": "Add four and five.",
+          "points": 20
+        },
+        {
+          "level": 2,
+          "question": "A clock strikes 6 in 5 seconds. How many seconds does it take to strike 12?",
+          "answer": "11",
+          "hint": "Six strikes have five intervals.",
+          "points": 20
+        },
+        {
+          "level": 3,
+          "question": "I am always in front of you but can never be seen. What am I?",
+          "answer": "future",
+          "hint": "It has not happened yet.",
+          "points": 20
+        },
+        {
+          "level": 4,
+          "question": "What number comes next: 1, 1, 2, 3, 5, 8, ?",
+          "answer": "13",
+          "hint": "Add the previous two numbers.",
+          "points": 20
+        },
+        {
+          "level": 5,
+          "question": "The more you take, the more you leave behind. What are they?",
+          "answer": "footsteps",
+          "hint": "Think about walking.",
+          "points": 20
+        }
+      ]
+    }
+  ],
+  "progress": [],
+  "attempts": []
+}
