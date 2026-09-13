@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Play | Unlock The Mystery</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #0b0d17;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 50px auto;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            color: #c084fc;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .score {
+            background: #151927;
+            padding: 15px 22px;
+            border-radius: 10px;
+            color: #facc15;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            color: #aaa;
+        }
+
+        .progress {
+            height: 10px;
+            background: #25283a;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 10px 0 30px;
+        }
+
+        .progress-bar {
+            width: 20%;
+            height: 100%;
+            background: #8b5cf6;
+        }
+
+        .card {
+            background: #151927;
+            border: 1px solid #3b3150;
+            border-radius: 20px;
+            padding: 45px 30px;
+            text-align: center;
+        }
+
+        .level {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 25px;
+            border: 1px solid #8b5cf6;
+            color: #c084fc;
+        }
+
+        .icon {
+            font-size: 65px;
+            margin: 20px 0;
+        }
+
+        h1 {
+            color: #f0c0ff;
+        }
+
+        .question {
+            max-width: 700px;
+            margin: 25px auto;
+            font-size: 21px;
+            line-height: 1.7;
+            color: #ddd;
+        }
+
+        input {
+            width: 90%;
+            max-width: 600px;
+            padding: 15px;
+            background: #0d101b;
+            color: white;
+            border: 1px solid #4b4160;
+            border-radius: 10px;
+            font-size: 17px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 14px 25px;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #7c3aed;
+        }
+
+        .hint-btn {
+            background: #292d42;
+            margin-left: 10px;
+        }
+
+        .hint {
+            display: none;
+            max-width: 600px;
+            margin: 25px auto 0;
+            padding: 16px;
+            background: #282016;
+            border: 1px solid #705126;
+            border-radius: 10px;
+            color: #fcd34d;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            color: #aaa;
+            text-decoration: none;
+        }
+
+        @media(max-width: 600px) {
+
+            .top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .score {
+                width: 100%;
+            }
+
+            .card {
+                padding: 30px 18px;
+            }
+
+            .question {
+                font-size: 18px;
+            }
+
+            .hint-btn {
+                margin-left: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <main class="container">
+
+        <div class="top">
+
+            <div class="title">
+                🔐 UNLOCK THE MYSTERY
+            </div>
+
+            <div class="score">
+                ⭐ Score: 0
+            </div>
+
+        </div>
+
+
+        <div class="progress-text">
+
+            <span>
+                Level 1 of 5
+            </span>
+
+            <span>
+                0% Complete
+            </span>
+
+        </div>
+
+
+        <div class="progress">
+
+            <div class="progress-bar"></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="level">
+                🧩 LEVEL 1
+            </div>
+
+
+            <div class="icon">
+                🔎
+            </div>
+
+
+            <h1>
+                Solve the Clue
+            </h1>
+
+
+            <div class="question">
+
+                Enter the mystery clue here.
+
+            </div>
+
+
+            <form id="answerForm">
+
+                <input
+                    type="text"
+                    id="answer"
+                    name="answer"
+                    placeholder="Enter your answer..."
+                    autocomplete="off"
+                    required
+                >
+
+                <br>
+
+                <button type="submit">
+                    🔓 SUBMIT ANSWER
+                </button>
+
+            </form>
+
+
+            <button
+                class="hint-btn"
+                type="button"
+                onclick="showHint()"
+            >
+                💡 GET HINT
+            </button>
+
+
+            <div
+                class="hint"
+                id="hint"
+            >
+                💡 Think carefully about the clue.
+            </div>
+
+
+            <a
+                class="back"
+                href="/hunts"
+            >
+                ← Back to Hunts
+            </a>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        function showHint() {
+
+            document
+                .getElementById("hint")
+                .style.display = "block";
+
+        }
+
+
+        document
+            .getElementById("answerForm")
+            .addEventListener(
+                "submit",
+                function(event) {
+
+                    event.preventDefault();
+
+                    const answer =
+                        document
+                            .getElementById("answer")
+                            .value
+                            .trim();
+
+                    if (!answer) {
+                        return;
+                    }
+
+                    alert(
+                        "Please open the hunt from the Hunts page."
+                    );
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>

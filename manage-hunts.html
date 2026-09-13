@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Hunts | Unlock The Mystery</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #0b0d17;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            background: #111522;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav strong {
+            color: #c084fc;
+            font-size: 20px;
+        }
+
+        nav a {
+            color: #ddd;
+            text-decoration: none;
+            margin-left: 25px;
+        }
+
+        nav a:hover {
+            color: #c084fc;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d084fc;
+            font-size: 40px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .add-section {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .add-btn {
+            background: #c85cff;
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background: #a855f7;
+        }
+
+        .add-form {
+            display: none;
+            max-width: 700px;
+            margin: 20px auto 40px;
+            padding: 25px;
+            background: #1d1529;
+            border: 1px solid #c85cff;
+            border-radius: 15px;
+        }
+
+        .add-form h2 {
+            color: #d084fc;
+            margin-top: 0;
+        }
+
+        .add-form input,
+        .add-form select,
+        .add-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background: #111522;
+            color: white;
+            font-size: 15px;
+        }
+
+        .add-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .save-btn,
+        .cancel-btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .save-btn {
+            background: #c85cff;
+        }
+
+        .cancel-btn {
+            background: #555;
+            margin-left: 10px;
+        }
+
+        .hunts {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .hunt-card {
+            background: #151927;
+            border: 1px solid #4b3670;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .hunt-card h2 {
+            color: #c084fc;
+            margin-top: 12px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            background: #8b5cf6;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .description {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .info {
+            color: #aaa;
+            margin-top: 15px;
+        }
+
+        .hunt-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #8b5cf6;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #7c3aed;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .message {
+            text-align: center;
+            color: #aaa;
+            padding: 30px;
+            grid-column: 1 / -1;
+        }
+
+        .back {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <nav>
+
+        <strong>
+            🔐 UNLOCK THE MYSTERY
+        </strong>
+
+        <div>
+
+            <a href="/">
+                Home
+            </a>
+
+            <a href="/admin">
+                Admin Panel
+            </a>
+
+            <a href="/leaderboard">
+                Leaderboard
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <main class="container">
+
+
+        <h1>
+            🗺️ MANAGE HUNTS
+        </h1>
+
+        <p class="subtitle">
+            Add, edit, delete and view all mystery hunts
+        </p>
+
+
+        <!-- ADD HUNT BUTTON -->
+
+        <div class="add-section">
+
+            <button
+                class="add-btn"
+                onclick="showAddHuntForm()"
+            >
+                ➕ ADD NEW HUNT
+            </button>
+
+        </div>
+
+
+        <!-- ADD HUNT FORM -->
+
+        <div
+            id="addHuntForm"
+            class="add-form"
+        >
+
+            <h2>
+                ➕ Add New Hunt
+            </h2>
+
+            <input
+                id="huntTitle"
+                type="text"
+                placeholder="Hunt Title"
+            >
+
+            <select
+                id="huntDifficulty"
+            >
+
+                <option value="Easy">
+                    Easy
+                </option>
+
+                <option value="Medium">
+                    Medium
+                </option>
+
+                <option value="Hard">
+                    Hard
+                </option>
+
+            </select>
+
+            <textarea
+                id="huntDescription"
+                placeholder="Hunt Description"
+            ></textarea>
+
+
+            <button
+                class="save-btn"
+                onclick="addHunt()"
+            >
+                SAVE HUNT
+            </button>
+
+            <button
+                class="cancel-btn"
+                onclick="hideAddHuntForm()"
+            >
+                CANCEL
+            </button>
+
+        </div>
+
+
+        <!-- HUNTS -->
+
+        <div
+            class="hunts"
+            id="huntsContainer"
+        >
+
+            <div class="message">
+                Loading hunts...
+            </div>
+
+        </div>
+
+
+        <div class="back">
+
+            <a
+                href="/admin"
+                class="btn"
+            >
+                ← BACK TO ADMIN PANEL
+            </a>
+
+        </div>
+
+
+    </main>
+
+
+    <script>
+
+
+        // =========================================
+        // SHOW ADD HUNT FORM
+        // =========================================
+
+        function showAddHuntForm() {
+
+            document.getElementById(
+                "addHuntForm"
+            ).style.display = "block";
+
+        }
+
+
+        // =========================================
+        // HIDE ADD HUNT FORM
+        // =========================================
+
+        function hideAddHuntForm() {
+
+            document.getElementById(
+                "addHuntForm"
+            ).style.display = "none";
+
+        }
+
+
+        // =========================================
+        // ADD NEW HUNT
+        // =========================================
+
+        async function addHunt() {
+
+            const title =
+                document.getElementById(
+                    "huntTitle"
+                ).value.trim();
+
+            const difficulty =
+                document.getElementById(
+                    "huntDifficulty"
+                ).value;
+
+            const description =
+                document.getElementById(
+                    "huntDescription"
+                ).value.trim();
+
+
+            if (!title || !description) {
+
+                alert(
+                    "Please enter hunt title and description."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/hunts",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                title: title,
+
+                                difficulty:
+                                    difficulty,
+
+                                description:
+                                    description
+
+                            })
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        result.message ||
+                        "Could not add hunt."
+                    );
+
+                    return;
+                }
+
+
+                alert(
+                    "Hunt added successfully!"
+                );
+
+
+                document.getElementById(
+                    "huntTitle"
+                ).value = "";
+
+                document.getElementById(
+                    "huntDescription"
+                ).value = "";
+
+
+                hideAddHuntForm();
+
+                loadHunts();
+
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert(
+                    "Server error while adding hunt."
+                );
+
+            }
+
+        }
+
+
+        // =========================================
+        // EDIT HUNT + 5 CLUES
+        // =========================================
+
+        async function editHunt(id) {
+
+            const title =
+                prompt(
+                    "Enter new hunt title:"
+                );
+
+
+            if (title === null) {
+                return;
+            }
+
+
+            const description =
+                prompt(
+                    "Enter new hunt description:"
+                );
+
+
+            if (description === null) {
+                return;
+            }
+
+
+            const clues = [];
+
+
+            // -------------------------------------
+            // 5 CLUES
+            // -------------------------------------
+
+            for (
+                let i = 1;
+                i <= 5;
+                i++
+            ) {
+
+
+                const question =
+                    prompt(
+                        "Enter Clue " +
+                        i +
+                        " question:"
+                    );
+
+
+                if (question === null) {
+                    return;
+                }
+
+
+                const answer =
+                    prompt(
+                        "Enter Clue " +
+                        i +
+                        " answer:"
+                    );
+
+
+                if (answer === null) {
+                    return;
+                }
+
+
+                const hint =
+                    prompt(
+                        "Enter Clue " +
+                        i +
+                        " hint:"
+                    );
+
+
+                if (hint === null) {
+                    return;
+                }
+
+
+                const pointsInput =
+                    prompt(
+                        "Enter Clue " +
+                        i +
+                        " points:",
+                        "20"
+                    );
+
+
+                if (pointsInput === null) {
+                    return;
+                }
+
+
+                const points =
+                    Number(pointsInput);
+
+
+                clues.push({
+
+                    id: i,
+
+                    question:
+                        question,
+
+                    answer:
+                        answer,
+
+                    hint:
+                        hint,
+
+                    points:
+                        points || 20
+
+                });
+
+            }
+
+
+            // -------------------------------------
+            // SEND UPDATE TO SERVER
+            // -------------------------------------
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/hunts/" + id,
+                        {
+
+                            method: "PUT",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    title:
+                                        title,
+
+                                    description:
+                                        description,
+
+                                    clues:
+                                        clues
+
+                                })
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (response.ok) {
+
+                    alert(
+                        "Hunt and 5 clues updated successfully!"
+                    );
+
+                    loadHunts();
+
+                } else {
+
+                    alert(
+                        result.message ||
+                        "Could not update hunt."
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert(
+                    "Server error while updating hunt."
+                );
+
+            }
+
+        }
+
+
+        // =========================================
+        // DELETE HUNT
+        // =========================================
+
+        async function deleteHunt(id) {
+
+
+            const confirmDelete =
+                confirm(
+                    "Are you sure you want to delete this hunt?"
+                );
+
+
+            if (!confirmDelete) {
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/hunts/" + id,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (response.ok) {
+
+                    alert(
+                        result.message ||
+                        "Hunt deleted successfully."
+                    );
+
+                    loadHunts();
+
+                } else {
+
+                    alert(
+                        result.message ||
+                        "Could not delete hunt."
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert(
+                    "Server error while deleting hunt."
+                );
+
+            }
+
+        }
+
+
+        // =========================================
+        // LOAD HUNTS
+        // =========================================
+
+        async function loadHunts() {
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/hunts"
+                    );
+
+
+                const hunts =
+                    await response.json();
+
+
+                const container =
+                    document.getElementById(
+                        "huntsContainer"
+                    );
+
+
+                if (
+                    !hunts ||
+                    hunts.length === 0
+                ) {
+
+                    container.innerHTML = `
+                        
+                        <div class="message">
+                            No hunts found.
+                        </div>
+
+                    `;
+
+                    return;
+                }
+
+
+                container.innerHTML =
+                    hunts.map(
+                        hunt => `
+
+                        <div class="hunt-card">
+
+                            <span class="difficulty">
+                                ${hunt.difficulty}
+                            </span>
+
+                            <h2>
+                                ${hunt.title}
+                            </h2>
+
+                            <p class="description">
+                                ${hunt.description}
+                            </p>
+
+                            <p class="info">
+                                🧩 ${hunt.clueCount || 0}
+                                Levels
+                            </p>
+
+                            <div class="hunt-actions">
+
+                                <a
+                                    class="btn"
+                                    href="/admin/hunt/${hunt.id}"
+                                >
+                                    VIEW HUNT
+                                </a>
+
+                                <button
+                                    class="btn"
+                                    onclick="editHunt(${hunt.id})"
+                                >
+                                    EDIT
+                                </button>
+
+                                <button
+                                    class="btn delete-btn"
+                                    onclick="deleteHunt(${hunt.id})"
+                                >
+                                    DELETE
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    `
+                    ).join("");
+
+
+            } catch (error) {
+
+                console.log(error);
+
+                document.getElementById(
+                    "huntsContainer"
+                ).innerHTML = `
+
+                    <div class="message">
+
+                        ❌ Could not load hunts.
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        // =========================================
+        // START
+        // =========================================
+
+        loadHunts();
+
+
+    </script>
+
+
+</body>
+
+</html>
