@@ -9,18 +9,10 @@
       "role": "admin"
     },
     {
-      "id": 2,
-      "name": "komal",
-      "username": "komss",
-      "password": "komss123",
-      "role": "user",
-      "score": 100
-    },
-    {
-      "id": 3,
-      "name": "jigyasha",
-      "username": "jacksii",
-      "password": "jacksii123",
+      "id": 4,
+      "name": "shivam",
+      "username": "shivam123",
+      "password": "shivam123",
       "role": "user"
     }
   ],
