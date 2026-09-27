@@ -398,9 +398,9 @@ function notFound(res) {
 // HOME PAGE
 // ===============================
 
-function homePage(res) {
+function homePage(res, currentUser) {
 
-    const html = readHTML("index.html");
+    let html = readHTML("index.html");
 
     if (!html) {
 
@@ -414,7 +414,35 @@ function homePage(res) {
         return;
     }
 
-    sendResponse(res, 200, html);
+    // ADMIN BUTTON
+    if (
+        currentUser &&
+        currentUser.role === "admin"
+    ) {
+
+        html = html.replace(
+            "</nav>",
+            `
+            <a href="/admin"
+               style="
+               color:white;
+               text-decoration:none;
+               margin-left:25px;
+               font-weight:bold;
+               ">
+               ⚙️ Admin
+            </a>
+            </nav>
+            `
+        );
+    }
+
+    sendResponse(
+        res,
+        200,
+        html,
+        "text/html"
+    );
 }
 
 // ===============================
@@ -901,12 +929,263 @@ const sessionId =
             <a href="/logout">
               🚪 LOGOUT
             </a>
+            ${user.role === "admin"
+    ? '<a href="/admin">⚙️ ADMIN PANEL</a>'
+    : ""}
 
         </body>
 
         </html>
         `
     );
+}
+// ==========================================
+// ADMIN LOGIN PAGE
+// ==========================================
+
+function adminLoginPage(res, message = "") {
+
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login | Unlock The Mystery</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0b0d17;
+            color: white;
+            font-family: Arial, sans-serif;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 430px;
+
+            background: #151927;
+
+            border: 1px solid #8b5cf6;
+
+            border-radius: 18px;
+
+            padding: 40px;
+
+            box-shadow:
+                0 20px 60px
+                rgba(139, 92, 246, 0.20);
+
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #c084fc;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #aeb2c3;
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 16px;
+
+            border-radius: 9px;
+
+            border: 1px solid #393d52;
+
+            background: #0b0d17;
+
+            color: white;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #8b5cf6;
+        }
+
+        button {
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #8b5cf6;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #7c3aed;
+        }
+
+        .error {
+            color: #fb7185;
+            margin-bottom: 15px;
+        }
+
+        .back {
+            display: inline-block;
+
+            margin-top: 20px;
+
+            color: #c4b5fd;
+
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <div class="icon">
+            🔐
+        </div>
+
+        <h1>Admin Login</h1>
+
+        <p>
+            Only administrators can access the Admin Panel.
+        </p>
+
+        ${
+            message
+                ? `<div class="error">${escapeHTML(message)}</div>`
+                : ""
+        }
+
+        <form method="POST"
+              action="/admin-login">
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Admin Username"
+                required
+            >
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Admin Password"
+                required
+            >
+
+            <button type="submit">
+                🔓 LOGIN AS ADMIN
+            </button>
+
+        </form>
+
+        <a href="/">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</body>
+
+</html>
+`;
+
+    sendResponse(
+        res,
+        200,
+        html,
+        "text/html"
+    );
+}
+// ==========================================
+// ADMIN LOGIN PROCESS
+// ==========================================
+
+function processAdminLogin(
+    req,
+    res,
+    username,
+    password
+) {
+
+    const data = loadData();
+
+    const admin =
+        (data.users || []).find(
+            user =>
+                user.username === username &&
+                user.password === password &&
+                user.role === "admin"
+        );
+
+    if (!admin) {
+
+        adminLoginPage(
+            res,
+            "Invalid admin username or password."
+        );
+
+        return;
+    }
+
+    const sessionId =
+        createSession(admin.id);
+
+    res.writeHead(
+        302,
+        {
+            "Set-Cookie":
+                `sessionId=${sessionId}; HttpOnly; Path=/`,
+
+            "Location": "/admin"
+        }
+    );
+
+    res.end();
 }
 // ===============================
 // LOGOUT
@@ -1426,6 +1705,10 @@ function renderPlayPage(
                 background: #292d42;
                 margin-left: 10px;
             }
+                .answer-btn {
+    background: #2563eb;
+    margin-left: 10px;
+}
 
             .hint {
                 display: none;
@@ -1580,6 +1863,75 @@ function renderPlayPage(
                     💡 GET HINT
 
                 </button>
+                <button
+    class="answer-btn"
+    id="showAnswerBtn"
+    onclick="
+        document
+        .getElementById('correctAnswer')
+        .style.display='block';
+
+        document
+        .getElementById('showAnswerBtn')
+        .style.display='none';
+
+        document
+        .getElementById('nextClueBtn')
+        .style.display='inline-block';
+    "
+>
+
+    👁️ SHOW ANSWER
+
+</button>
+
+
+<div
+    id="correctAnswer"
+    style="
+        display:none;
+        max-width:600px;
+        margin:25px auto 0;
+        padding:18px;
+        background:#10251a;
+        border:1px solid #22c55e;
+        border-radius:10px;
+        color:#86efac;
+        font-size:18px;
+    "
+>
+
+    ✅ Correct Answer:
+    <strong>
+        ${escapeHTML(clue.answer)}
+    </strong>
+
+    <p style="color:#facc15;">
+        ⚠️ Show Answer used.
+        This clue gives 0 points.
+    </p>
+
+</div>
+
+
+<a
+    id="nextClueBtn"
+    href="/next-after-answer/${hunt.id}"
+    style="
+        display:none;
+        margin-top:15px;
+        padding:14px 25px;
+        background:#22c55e;
+        color:white;
+        text-decoration:none;
+        border-radius:9px;
+        font-weight:bold;
+    "
+>
+
+    ➡️ NEXT CLUE
+
+</a>
 
 
                 <div
@@ -1612,7 +1964,189 @@ function renderPlayPage(
     );
 }
 
+// ===============================
+// NEXT CLUE AFTER SHOW ANSWER
+// ===============================
 
+function nextAfterShowAnswer(
+    res,
+    req,
+    huntId
+) {
+
+    const data = loadData();
+
+    const hunt =
+        findHunt(data, huntId);
+
+    if (!hunt) {
+        notFound(res);
+        return;
+    }
+
+    const player =
+        getPlayer(huntId);
+
+    // Move to next level
+    // No points are awarded
+    player.level++;
+
+    // Reset hint status
+    player.hintsUsed = false;
+
+    // ===============================
+    // ALL LEVELS COMPLETED
+    // ===============================
+
+    if (
+        player.level >
+        hunt.clues.length
+    ) {
+
+        const finalScore =
+            player.score;
+
+        const currentUser =
+            getSessionUser(req);
+
+        if (currentUser) {
+
+            const user =
+                (data.users || []).find(
+                    u =>
+                        String(u.id) ===
+                        String(currentUser.id)
+                );
+
+            if (user) {
+
+                user.score =
+                    finalScore;
+
+                saveData(data);
+            }
+        }
+
+        delete players[huntId];
+
+        sendResponse(
+            res,
+            200,
+            `
+            <!DOCTYPE html>
+
+            <html>
+
+            <head>
+
+                <meta charset="UTF-8">
+
+                <meta
+                    name="viewport"
+                    content="width=device-width,
+                             initial-scale=1.0"
+                >
+
+                <title>
+                    Treasure Unlocked
+                </title>
+
+                <style>
+
+                    body {
+                        margin: 0;
+                        background: #0b0d17;
+                        color: white;
+                        font-family: Arial;
+                        text-align: center;
+                        padding: 100px 20px;
+                    }
+
+                    .box {
+                        max-width: 700px;
+                        margin: auto;
+                        background: #151927;
+                        padding: 50px;
+                        border-radius: 20px;
+                        border: 1px solid #8b5cf6;
+                    }
+
+                    h1 {
+                        color: #c084fc;
+                        font-size: 45px;
+                    }
+
+                    .score {
+                        color: #facc15;
+                        font-size: 30px;
+                    }
+
+                    a {
+                        display: inline-block;
+                        margin-top: 25px;
+                        padding: 14px 25px;
+                        background: #8b5cf6;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 9px;
+                    }
+
+                </style>
+
+            </head>
+
+            <body>
+
+                <div class="box">
+
+                    <div style="
+                        font-size:70px
+                    ">
+                        🏆
+                    </div>
+
+                    <h1>
+                        TREASURE UNLOCKED!
+                    </h1>
+
+                    <h2>
+                        ${escapeHTML(hunt.title)}
+                    </h2>
+
+                    <p>
+                        Congratulations!
+                        You completed the mystery.
+                    </p>
+
+                    <div class="score">
+                        Final Score:
+                        ${finalScore}
+                    </div>
+
+                    <a href="/hunts">
+                        🔍 PLAY ANOTHER HUNT
+                    </a>
+
+                </div>
+
+            </body>
+
+            </html>
+            `
+        );
+
+        return;
+    }
+
+    // ===============================
+    // SHOW NEXT CLUE
+    // ===============================
+
+    renderPlayPage(
+        res,
+        huntId
+    );
+}
 // ===============================
 // CHECK ANSWER
 // ===============================
@@ -2061,6 +2595,63 @@ const server =
 
             const pathname =
                 parsedUrl.pathname;
+                // ==========================================
+// ADMIN LOGIN
+// ==========================================
+
+if (
+    pathname === "/admin-login" &&
+    req.method === "GET"
+) {
+
+    adminLoginPage(res);
+
+    return;
+}
+
+
+if (
+    pathname === "/admin-login" &&
+    req.method === "POST"
+) {
+
+    readRequestBody(req, body => {
+
+        try {
+
+            const params =
+                new URLSearchParams(body);
+
+            const username =
+                params.get("username") || "";
+
+            const password =
+                params.get("password") || "";
+
+            processAdminLogin(
+                req,
+                res,
+                username,
+                password
+            );
+
+        } catch (error) {
+
+            console.log(
+                "ADMIN LOGIN ERROR:",
+                error
+            );
+
+            adminLoginPage(
+                res,
+                "Something went wrong."
+            );
+        }
+
+    });
+
+    return;
+}
 // ===============================
 // DELETE USER API
 // ===============================
@@ -3643,7 +4234,13 @@ if (
                 pathname === "/"
             ) {
 
-                homePage(res);
+                const currentUser =
+    getSessionUser(req);
+
+homePage(
+    res,
+    currentUser
+);
                 return;
 
             }
@@ -3759,6 +4356,36 @@ if (
                 return;
 
             }
+            // =========================
+// NEXT AFTER SHOW ANSWER
+// =========================
+
+if (
+    pathname.startsWith(
+        "/next-after-answer/"
+    )
+    &&
+    req.method === "GET"
+) {
+
+    const user =
+        requireLogin(req, res);
+
+    if (!user) {
+        return;
+    }
+
+    const huntId =
+        pathname.split("/")[2];
+
+    nextAfterShowAnswer(
+        res,
+        req,
+        huntId
+    );
+
+    return;
+}
 
 
             // =========================
