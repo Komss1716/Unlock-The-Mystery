@@ -313,7 +313,60 @@ function findHunt(data, huntId) {
             String(hunt.id) === String(huntId)
     );
 }
+// ===============================
+// HUNT UNLOCK SYSTEM
+// ===============================
 
+function isHuntUnlocked(user, hunt, data) {
+
+    if (!user || !hunt) {
+        return false;
+    }
+
+    // Admin can access every hunt
+    if (user.role === "admin") {
+        return true;
+    }
+
+    const completedHunts =
+        Array.isArray(user.completedHunts)
+            ? user.completedHunts.map(Number)
+            : [];
+
+    const difficultyOrder = {
+        "Easy": 1,
+        "Medium": 2,
+        "Hard": 3
+    };
+
+    const currentLevel =
+        difficultyOrder[hunt.difficulty] || 1;
+
+    // Easy hunts are always unlocked
+    if (currentLevel === 1) {
+        return true;
+    }
+
+    // Find all lower difficulty hunts
+    const lowerHunts =
+        (data.hunts || []).filter(
+            h =>
+                (difficultyOrder[h.difficulty] || 1)
+                < currentLevel
+        );
+
+    // All previous difficulty hunts
+    // must be completed
+    const allLowerCompleted =
+        lowerHunts.every(
+            h =>
+                completedHunts.includes(
+                    Number(h.id)
+                )
+        );
+
+    return allLowerCompleted;
+}
 
 // ===============================
 // FIND CLUE
@@ -528,7 +581,62 @@ function registerUser(
     username,
     password
 ) {
+// ===============================
+// REGISTER INPUT VALIDATION
+// ===============================
 
+name = String(name).trim();
+username = String(username).trim().toLowerCase();
+password = String(password);
+
+if (!/^[A-Za-z ]+$/.test(name)) {
+
+    sendResponse(
+        res,
+        400,
+        `
+        <h2 style="color:#fb7185;">
+            ❌ Invalid Name
+        </h2>
+
+        <p>
+            Name can contain only A-Z letters and spaces.
+        </p>
+
+        <a href="/register">
+            ← Try Again
+        </a>
+        `,
+        "text/html"
+    );
+
+    return;
+}
+
+if (!/^[a-z0-9_]+$/.test(username)) {
+
+    sendResponse(
+        res,
+        400,
+        `
+        <h2 style="color:#fb7185;">
+            ❌ Invalid Username
+        </h2>
+
+        <p>
+            Username must contain lowercase letters,
+            numbers or underscore only.
+        </p>
+
+        <a href="/register">
+            ← Try Again
+        </a>
+        `,
+        "text/html"
+    );
+
+    return;
+}
     const data = loadData();
 
     if (!data.users) {
@@ -1473,20 +1581,16 @@ function getPlayer(huntId) {
     if (!players[huntId]) {
 
         players[huntId] = {
-
             level: 1,
-
             score: 0,
-
-            hintsUsed: false
-
+            hintsUsed: false,
+            wrongAnswer: false
         };
 
     }
 
     return players[huntId];
 }
-
 
 // ===============================
 // PLAY PAGE
@@ -1863,28 +1967,36 @@ function renderPlayPage(
                     💡 GET HINT
 
                 </button>
-                <button
+<button
     class="answer-btn"
     id="showAnswerBtn"
     onclick="
-        document
-        .getElementById('correctAnswer')
-        .style.display='block';
+        if (${player.wrongAnswer ? 'true' : 'false'}) {
 
-        document
-        .getElementById('showAnswerBtn')
-        .style.display='none';
+            document
+                .getElementById('correctAnswer')
+                .style.display = 'block';
 
-        document
-        .getElementById('nextClueBtn')
-        .style.display='inline-block';
+            document
+                .getElementById('showAnswerBtn')
+                .style.display = 'none';
+
+            document
+                .getElementById('nextClueBtn')
+                .style.display = 'inline-block';
+
+        } else {
+
+            alert(
+                '⚠️ Please submit your answer first. The correct answer will be shown after an incorrect attempt.'
+            );
+
+        }
     "
 >
-
     👁️ SHOW ANSWER
-
 </button>
-
+ 
 
 <div
     id="correctAnswer"
@@ -1990,6 +2102,7 @@ function nextAfterShowAnswer(
     // Move to next level
     // No points are awarded
     player.level++;
+    player.wrongAnswer = false;
 
     // Reset hint status
     player.hintsUsed = false;
@@ -2213,6 +2326,7 @@ function checkAnswer(
         userAnswer !==
         correctAnswer
     ) {
+        player.wrongAnswer = true;
 
         sendResponse(
             res,
@@ -2331,6 +2445,7 @@ function checkAnswer(
 
 const currentUser =
     getSessionUser(req);
+    console.log("PLAY USER:", currentUser);
 
 if (currentUser) {
 
@@ -2342,11 +2457,33 @@ if (currentUser) {
         );
 
     if (user) {
+
+        // Save final score
         user.score = finalScore;
+
+        // Create completed hunts list if needed
+        if (!Array.isArray(user.completedHunts)) {
+            user.completedHunts = [];
+        }
+
+        // Mark this hunt as completed
+        const completedHuntId =
+            Number(hunt.id);
+
+        if (
+            !user.completedHunts.includes(
+                completedHuntId
+            )
+        ) {
+
+            user.completedHunts.push(
+                completedHuntId
+            );
+        }
+
         saveData(data);
     }
 }
-
         delete players[huntId];
 
 
@@ -3436,7 +3573,6 @@ if (
     return;
 }
 
-
 // =====================================
 // DELETE HUNT API
 // =====================================
@@ -3457,11 +3593,13 @@ if (
         const huntId =
             Number(pathname.split("/").pop());
 
-        const data = loadData();
+        const data =
+            loadData();
 
         const index =
-            data.hunts.findIndex(
-                h => Number(h.id) === huntId
+            (data.hunts || []).findIndex(
+                h =>
+                    Number(h.id) === huntId
             );
 
         if (index === -1) {
@@ -3480,13 +3618,30 @@ if (
 
         data.hunts.splice(index, 1);
 
-        saveData(data);
+        const saved =
+            saveData(data);
+
+        if (!saved) {
+
+            sendResponse(
+                res,
+                500,
+                JSON.stringify({
+                    message:
+                        "Could not save hunt deletion."
+                }),
+                "application/json"
+            );
+
+            return;
+        }
 
         sendResponse(
             res,
             200,
             JSON.stringify({
-                message: "Hunt deleted successfully!"
+                message:
+                    "Hunt deleted successfully!"
             }),
             "application/json"
         );
@@ -3502,14 +3657,20 @@ if (
             res,
             500,
             JSON.stringify({
-                message: "Could not delete hunt."
+                message:
+                    "Could not delete hunt."
             }),
             "application/json"
         );
+
+        return;
     }
 
     return;
 }
+
+
+
 // ===============================
 // GET HUNTS API
 // ===============================
@@ -3546,151 +3707,254 @@ if (
 // ADMIN VIEW HUNT
 // ===============================
 
+
 if (
-    pathname.startsWith("/admin/hunt/")
-    &&
+    pathname.startsWith("/admin/hunt/") &&
     req.method === "GET"
 ) {
+
     const admin = requireAdmin(req, res);
 
     if (!admin) {
-    return;
-    }
-    const huntId =
-        Number(pathname.split("/").pop());
-
-    const data = loadData();
-
-    const hunt =
-        (data.hunts || []).find(
-            h => h.id === huntId
-        );
-
-    if (!hunt) {
-        sendResponse(
-            res,
-            404,
-            "Hunt not found",
-            "text/plain"
-        );
         return;
     }
 
-    let html = `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>${escapeHTML(hunt.title)}</title>
-    <style>
-        body {
-            background: #120d1c;
-            color: white;
-            font-family: Arial, sans-serif;
-            padding: 40px;
-        }
+    const huntId =
+        pathname.split("/").pop();
 
-        .box {
-            max-width: 800px;
-            margin: auto;
-            padding: 30px;
-            border: 1px solid #c85cff;
-            border-radius: 20px;
-            background: #1d1529;
-        }
+    const data =
+        loadData();
 
-        h1 {
-            color: #e06cff;
-        }
+    const hunt =
+        (data.hunts || []).find(
+            h =>
+                String(h.id) ===
+                String(huntId)
+        );
 
-        .difficulty {
-            display: inline-block;
-            background: #c85cff;
-            padding: 8px 15px;
-            border-radius: 20px;
-        }
+    if (!hunt) {
 
-        .clue {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 15px;
-            background: #291d38;
-        }
+        sendResponse(
+            res,
+            404,
+            "<h1>Hunt not found</h1>",
+            "text/html"
+        );
 
-        a {
-            color: white;
-            text-decoration: none;
-        }
+        return;
+    }
 
-        .back {
-            display: inline-block;
-            margin-top: 25px;
-            background: #c85cff;
-            padding: 12px 20px;
-            border-radius: 10px;
-        }
-    </style>
-</head>
+    const clues =
+        Array.isArray(hunt.clues)
+            ? hunt.clues
+            : [];
 
-<body>
+    let clueHTML = "";
 
-<div class="box">
+    if (clues.length === 0) {
 
-    <h1>🗺️ ${escapeHTML(hunt.title)}</h1>
+        clueHTML =
+            '<div class="empty">No clues available for this hunt.</div>';
 
-    <span class="difficulty">
-        ${escapeHTML(hunt.difficulty)}
-    </span>
+    } else {
 
-    <p>
-        ${escapeHTML(hunt.description)}
-    </p>
+        clues.forEach(
+            (clue, index) => {
 
-    <h2>🧩 Clues</h2>
-`;
+                clueHTML +=
+                    '<div class="clue">' +
 
-    (hunt.clues || []).forEach(
-        (clue, index) => {
+                    '<div class="level">' +
+                    'Level ' +
+                    (index + 1) +
+                    '</div>' +
 
-            html += `
-    <div class="clue">
+                    '<div class="question">' +
+                    escapeHTML(
+                        clue.question || ""
+                    ) +
+                    '</div>' +
 
-        <h3>Level ${index + 1}</h3>
+                    '<div class="points">' +
+                    (clue.points || 0) +
+                    ' Points' +
+                    '</div>' +
 
-        <p>
-            <strong>Question:</strong>
-            ${escapeHTML(clue.question)}
-        </p>
+                    '</div>';
+            }
+        );
+    }
 
-        <p>
-            <strong>Answer:</strong>
-            ${escapeHTML(clue.answer)}
-        </p>
+    const html =
+        '<!DOCTYPE html>' +
 
-        <p>
-            <strong>Hint:</strong>
-            ${escapeHTML(clue.hint)}
-        </p>
+        '<html lang="en">' +
 
-        <p>
-            <strong>Points:</strong>
-            ${clue.points}
-        </p>
+        '<head>' +
 
-    </div>
-`;
-        }
-    );
+        '<meta charset="UTF-8">' +
 
-    html += `
-    <a class="back" href="/manage-hunts">
-        ← Back to Manage Hunts
-    </a>
+        '<meta name="viewport" ' +
+        'content="width=device-width, initial-scale=1.0">' +
 
-</div>
+        '<title>' +
+        escapeHTML(hunt.title) +
+        '</title>' +
 
-</body>
-</html>
-`;
+        '<style>' +
+
+        '* {' +
+        'box-sizing: border-box;' +
+        '}' +
+
+        'body {' +
+        'margin: 0;' +
+        'background: #0b0d17;' +
+        'color: white;' +
+        'font-family: Arial, sans-serif;' +
+        '}' +
+
+        'header {' +
+        'padding: 25px 7%;' +
+        'background: #111326;' +
+        'border-bottom: 1px solid #8b5cf6;' +
+        '}' +
+
+        'header h2 {' +
+        'margin: 0;' +
+        'color: #f5a7ff;' +
+        '}' +
+
+        '.container {' +
+        'width: 85%;' +
+        'max-width: 1000px;' +
+        'margin: 40px auto;' +
+        '}' +
+
+        '.card {' +
+        'background: #15172b;' +
+        'border: 1px solid #8b5cf6;' +
+        'border-radius: 20px;' +
+        'padding: 35px;' +
+        '}' +
+
+        '.badge {' +
+        'display: inline-block;' +
+        'background: #c45cff;' +
+        'color: white;' +
+        'padding: 8px 18px;' +
+        'border-radius: 20px;' +
+        'font-weight: bold;' +
+        '}' +
+
+        'h1 {' +
+        'color: #f5a7ff;' +
+        'font-size: 40px;' +
+        'margin: 20px 0 10px;' +
+        '}' +
+
+        '.description {' +
+        'color: #ddd;' +
+        'font-size: 18px;' +
+        'margin-bottom: 30px;' +
+        '}' +
+
+        '.section-title {' +
+        'color: #f5a7ff;' +
+        'margin-top: 30px;' +
+        '}' +
+
+        '.clue {' +
+        'background: #0f1120;' +
+        'border-left: 5px solid #ff5bd8;' +
+        'border-radius: 12px;' +
+        'padding: 22px;' +
+        'margin: 18px 0;' +
+        '}' +
+
+        '.level {' +
+        'color: #f5a7ff;' +
+        'font-weight: bold;' +
+        'font-size: 18px;' +
+        'margin-bottom: 12px;' +
+        '}' +
+
+        '.question {' +
+        'font-size: 18px;' +
+        'line-height: 1.5;' +
+        '}' +
+
+        '.points {' +
+        'color: #f5a7ff;' +
+        'margin-top: 12px;' +
+        'font-weight: bold;' +
+        '}' +
+
+        '.back {' +
+        'display: inline-block;' +
+        'margin-top: 25px;' +
+        'padding: 12px 22px;' +
+        'background: #c45cff;' +
+        'color: white;' +
+        'text-decoration: none;' +
+        'border-radius: 10px;' +
+        'font-weight: bold;' +
+        '}' +
+
+        '.empty {' +
+        'padding: 20px;' +
+        'background: #0f1120;' +
+        'border-radius: 10px;' +
+        'color: #bbb;' +
+        '}' +
+
+        '</style>' +
+
+        '</head>' +
+
+        '<body>' +
+
+        '<header>' +
+        '<h2>🔐 UNLOCK THE MYSTERY — ADMIN VIEW</h2>' +
+        '</header>' +
+
+        '<div class="container">' +
+
+        '<div class="card">' +
+
+        '<span class="badge">' +
+        escapeHTML(
+            hunt.difficulty || "Mystery"
+        ) +
+        '</span>' +
+
+        '<h1>' +
+        escapeHTML(hunt.title) +
+        '</h1>' +
+
+        '<div class="description">' +
+        escapeHTML(
+            hunt.description || ""
+        ) +
+        '</div>' +
+
+        '<h2 class="section-title">' +
+        '🔎 Mystery Clues' +
+        '</h2>' +
+
+        clueHTML +
+
+        '<a href="/manage-hunts" class="back">' +
+        '← Back to Manage Hunts' +
+        '</a>' +
+
+        '</div>' +
+
+        '</div>' +
+
+        '</body>' +
+
+        '</html>';
 
     sendResponse(
         res,
@@ -3700,7 +3964,7 @@ if (
     );
 
     return;
-}               
+}         
 // ===============================
 // MANAGE HUNTS PAGE
 // ===============================
@@ -4253,12 +4517,7 @@ homePage(
             if (
                 pathname === "/hunts"
             ) {
-                const user =
-                requireLogin(req, res);
-
-                if (!user) {
-                return;
-                }
+                
 
                 huntsPage(res);
                 return;
@@ -4278,12 +4537,7 @@ if (
 
     const huntId =
         pathname.split("/")[2];
-    const user =
-    requireLogin(req, res);
-
-    if (!user) {
-     return;
- }
+    
     huntDetailsPage(
         res,
         huntId
@@ -4311,7 +4565,147 @@ if (
                 if (!user) {
                 return;
         }
+// ===============================
+// CHECK HUNT UNLOCK
+// ===============================
 
+const data =
+    loadData();
+
+const selectedHunt =
+    findHunt(data, huntId);
+
+if (!selectedHunt) {
+
+    notFound(res);
+    return;
+}
+
+if (
+    !isHuntUnlocked(
+        user,
+        selectedHunt,
+        data
+    )
+) {
+
+    sendResponse(
+        res,
+        403,
+        `
+        <!DOCTYPE html>
+
+        <html>
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <title>Hunt Locked</title>
+
+            <style>
+
+                body {
+                    margin: 0;
+                    background: #0b0d17;
+                    color: white;
+                    font-family: Arial;
+                    text-align: center;
+                    padding: 100px 20px;
+                }
+
+                .box {
+                    max-width: 650px;
+                    margin: auto;
+                    background: #151927;
+                    padding: 50px;
+                    border-radius: 20px;
+                    border: 1px solid #8b5cf6;
+                }
+
+                h1 {
+                    color: #c084fc;
+                }
+
+                p {
+                    color: #ccc;
+                    font-size: 18px;
+                    line-height: 1.6;
+                }
+
+                a {
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 14px 25px;
+                    background: #8b5cf6;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 9px;
+                    font-weight: bold;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="box">
+
+                <div style="font-size:65px;">
+                    🔒
+                </div>
+
+                <h1>
+                    Hunt Locked
+                </h1>
+
+                <p>
+                    Complete the previous difficulty
+                    before playing this hunt.
+                </p>
+
+                <p>
+                    Easy → Medium → Hard
+                </p>
+
+                <a href="/hunts">
+                    ← BACK TO HUNTS
+                </a>
+
+            </div>
+
+        </body>
+
+        </html>
+        `,
+        "text/html"
+    );
+
+    return;
+}
+// ===============================
+// LOGIN REQUIRED TO START HUNT
+// ===============================
+
+const currentUser =
+    getSessionUser(req);
+
+if (!currentUser) {
+
+    res.writeHead(302, {
+        "Location": "/login"
+    });
+
+    res.end();
+
+    return;
+}
                 renderPlayPage(
                     res,
                     huntId

@@ -112,6 +112,14 @@
             text-decoration: none;
         }
 
+        .error {
+            color: #fb7185;
+            font-size: 14px;
+            margin-top: -12px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
     </style>
 
 </head>
@@ -133,8 +141,13 @@
             Join the mystery adventure
         </p>
 
-
-        <form method="POST" action="/register">
+<form
+    method="POST"
+    action="/register"
+    id="registerForm"
+    onsubmit="return validateRegisterForm()"
+>
+            <!-- NAME -->
 
             <label>
                 Name
@@ -142,11 +155,24 @@
 
             <input
                 type="text"
+                id="name"
                 name="name"
                 placeholder="Enter your name"
                 required
+                autocomplete="name"
+                pattern="[A-Za-z ]+"
+                title="Name can contain only A-Z letters and spaces."
             >
 
+            <div
+                class="error"
+                id="nameError"
+            >
+                ❌ Name can contain only A-Z letters.
+            </div>
+
+
+            <!-- USERNAME -->
 
             <label>
                 Username
@@ -154,11 +180,24 @@
 
             <input
                 type="text"
+                id="username"
                 name="username"
                 placeholder="Create username"
                 required
+                autocomplete="username"
+                pattern="[a-z0-9_]+"
+                title="Username must contain lowercase letters, numbers or underscore only."
             >
 
+            <div
+                class="error"
+                id="usernameError"
+            >
+                ❌ Username can contain only lowercase letters, numbers and underscore.
+            </div>
+
+
+            <!-- PASSWORD -->
 
             <label>
                 Password
@@ -169,6 +208,7 @@
                 name="password"
                 placeholder="Create password"
                 required
+                autocomplete="new-password"
             >
 
 
@@ -196,6 +236,200 @@
 
     </div>
 
+
+    <script>
+
+        const nameInput =
+            document.getElementById("name");
+
+        const usernameInput =
+            document.getElementById("username");
+
+        const nameError =
+            document.getElementById("nameError");
+
+        const usernameError =
+            document.getElementById("usernameError");
+
+
+        // ===============================
+        // NAME VALIDATION
+        // ===============================
+
+        nameInput.addEventListener(
+            "input",
+            function () {
+
+                // Only A-Z letters and spaces
+                this.value =
+                    this.value.replace(
+                        /[^A-Za-z ]/g,
+                        ""
+                    );
+
+                // Remove extra spaces
+                this.value =
+                    this.value.replace(
+                        /\s+/g,
+                        " "
+                    );
+
+                if (
+                    this.value &&
+                    !/^[A-Za-z ]+$/.test(
+                        this.value
+                    )
+                ) {
+
+                    nameError.style.display =
+                        "block";
+
+                } else {
+
+                    nameError.style.display =
+                        "none";
+                }
+
+            }
+        );
+
+
+        // ===============================
+        // USERNAME
+        // ===============================
+
+        usernameInput.addEventListener(
+            "input",
+            function () {
+
+                // Automatically convert to lowercase
+                this.value =
+                    this.value.toLowerCase();
+
+                // Remove spaces and invalid symbols
+                this.value =
+                    this.value.replace(
+                        /[^a-z0-9_]/g,
+                        ""
+                    );
+
+                if (
+                    this.value &&
+                    !/^[a-z0-9_]+$/.test(
+                        this.value
+                    )
+                ) {
+
+                    usernameError.style.display =
+                        "block";
+
+                } else {
+
+                    usernameError.style.display =
+                        "none";
+                }
+
+            }
+        );
+
+
+        // ===============================
+        // FORM VALIDATION
+        // ===============================
+
+        document
+            .getElementById("registerForm")
+            .addEventListener(
+                "submit",
+                function (event) {
+
+                    const name =
+                        nameInput.value.trim();
+
+                    const username =
+                        usernameInput.value.trim();
+
+
+                    if (
+                        !/^[A-Za-z ]+$/.test(name)
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Name can contain only A-Z letters and spaces."
+                        );
+
+                        nameInput.focus();
+
+                        return;
+                    }
+
+
+                    if (
+                        !/^[a-z0-9_]+$/.test(
+                            username
+                        )
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Username must use lowercase letters, numbers or underscore only."
+                        );
+
+                        usernameInput.focus();
+
+                        return;
+                    }
+
+                }
+            );
+
+    </script>
+<script>
+
+function validateRegisterForm() {
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const usernameInput =
+        document.getElementById("username");
+
+    const username =
+        usernameInput.value.trim();
+
+    // NAME: Only A-Z letters and spaces
+    if (!/^[A-Za-z ]+$/.test(name)) {
+
+        alert(
+            "Name can contain only A-Z letters."
+        );
+
+        return false;
+    }
+
+    // USERNAME: Convert to lowercase
+    usernameInput.value =
+        username.toLowerCase();
+
+    // USERNAME: Only lowercase letters, numbers and underscore
+    if (!/^[a-z0-9_]+$/.test(
+        usernameInput.value
+    )) {
+
+        alert(
+            "Username can contain only lowercase letters, numbers and underscore."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+</script>
 </body>
 
 </html>
